@@ -1,4 +1,4 @@
-from models.post import Post
+from models.menu import Menu
 from database import Database
 
 """
@@ -11,6 +11,7 @@ __author__ = "Seamus de Cleir"
 # Starts the Database IMPORTANT
 Database.initialize()
 
+menu = Menu()
 
-
+menu.run_menu()
 

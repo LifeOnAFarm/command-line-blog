@@ -11,15 +11,15 @@ __author__ = "Seamus de Cleir"
 
 class Post(object):
 
-    def __init__(self, title, content, author, blog_id, created_date=datetime.datetime.utcnow(), post_id=None):
+    def __init__(self, title, content, author, blog_id, created_date=datetime.datetime.utcnow(), id=None):
         self.title = title
         self.content = content
         self.author = author
         self.blog_id = blog_id
         self.created_date = created_date
 
-        # Sets a random hex value as the post_id if the post_id is empty
-        self.post_id = uuid.uuid4().hex if post_id is None else post_id
+        # Sets a random hex value as the id if the id is empty
+        self.id = uuid.uuid4().hex if id is None else id
 
     # Posts to post Database
     def save_to_mongo(self):
@@ -27,7 +27,7 @@ class Post(object):
 
     def json(self):
         return {
-            "id": self.post_id,
+            "id": self.id,
             "blog_id": self.blog_id,
             "author": self.author,
             "title": self.title,
@@ -36,9 +36,16 @@ class Post(object):
         }
 
     # Find a post by id
-    @staticmethod
-    def from_mongo(id):
-        return Database.find_one(collection="posts", query={"id": id})
+    @classmethod
+    def from_mongo(cls, id):
+        post_data = Database.find_one(collection="posts", query={"id": id})
+
+        return Post(blog_id=post_data["blog_id"],
+                    title=post_data["title"],
+                    content=post_data["content"],
+                    author=post_data["author"],
+                    created_date=post_data["created_date"],
+                    id=post_data["id"])
 
     # Finds many posts by id
     @staticmethod
